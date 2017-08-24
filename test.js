@@ -1,5 +1,10 @@
 const logsJs = require('./logs-js');
+logsJs.loadConfig('./logs-conf.json');
 
+require('./test/test2.js');
+
+console.time('test console.time');
+console.timeEnd('test console.time');
 
 console.log('test regular logging with no log level');
 console.log('test TRACE', logsJs.TRACE);
