@@ -1,11 +1,10 @@
 {
     "defaultLogLevel": "INFO",
     "log" : {
-        "*": "WARN",
+        "*": "ALL",
         "test.js": "ALL",
         "test": {
-            "*": "OFF",
-            "test2.js": "ALL"
+            "*": "DEBUG"
         }
     }
 }

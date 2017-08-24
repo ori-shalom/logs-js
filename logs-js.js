@@ -44,7 +44,7 @@ exports.loadConfig = (confFile) => {
 	}
 }
 
-let fileLogLevel = (parentLevel, filePathArray, conf) => {
+let findFileLogLevel = (parentLevel, filePathArray, conf) => {
 	if (conf['*'] && typeof conf['*'] === "string" && logLevels[conf['*']] && logLevels[conf['*']] instanceof LogLevel) {
 		parentLevel = logLevels[conf['*']];
 	}
@@ -54,30 +54,35 @@ let fileLogLevel = (parentLevel, filePathArray, conf) => {
 		} else if (typeof conf[filePathArray[0]] === "object") {
 			conf = conf[filePathArray[0]];
 			filePathArray.shift()
-			return fileLogLevel(parentLevel, filePathArray, conf);
+			return findFileLogLevel(parentLevel, filePathArray, conf);
 		}
 	}
 	return parentLevel;
 }
 
+let printIfAllowed = (logLevel, argumentsArray) => {
+	let stackLine = new Error().stack.split('\n')[3];
+	let location = stackLine.substring(stackLine.lastIndexOf('(') + 1, stackLine.length).replace(__dirname + '\\' , '').split(":");
+	let file = location[0];
+	let path = file.split('\\', );
+	let allowedLogLevel = findFileLogLevel(logLevels.OFF, path, conf);
+
+	if (allowedLogLevel.level !== 7 && allowedLogLevel.level <= logLevel.level && logLevel.level != 7) {
+		let line = location[1];
+		argumentsArray[0] = l.gray+'['+e+logLevel.color+pad(logLevel.name, levelLength)+e+l.gray+'] - '+e+
+			d.cyan+new Date().toISOString().replace(/T/, ' ').replace(/Z.*$/, '').replace(/-/g, d.yellow+'-'+d.cyan).replace(/:/g, d.yellow+':'+d.cyan).replace('.', d.yellow+'.'+d.cyan)+e+
+			l.gray+' - ['+e+pad(file+':',fileLength-(''+line).length).replace('.',d.yellow+'.'+e)+d.cyan+line+e+l.gray+']: '+e+argumentsArray[0];
+		oldLog.apply(null, argumentsArray);
+	}
+}
+
 let oldLog = console.log;
 console.log = function(){
-	if (arguments.length > 0 && arguments[arguments.length - 1] instanceof LogLevel) {
+	if ((arguments.length > 0 && arguments[arguments.length - 1] instanceof LogLevel)) {
 		let logLevel = Array.prototype.pop.apply(arguments);
-
-		let stackLine = new Error().stack.split('\n')[2];
-		let location = stackLine.substring(stackLine.lastIndexOf('(') + 1, stackLine.length).replace(__dirname + '\\' , '').split(":");
-		let file = location[0];
-		let path = file.split('\\', );
-		let allowedLogLevel = fileLogLevel(logLevels.OFF, path, conf);
-
-		if (allowedLogLevel.level !== 7 && allowedLogLevel.level <= logLevel.level && logLevel.level != 7) {
-			let line = location[1];
-			arguments[0] = l.gray+'['+e+logLevel.color+pad(logLevel.name, levelLength)+e+l.gray+'] - '+e+
-				d.cyan+new Date().toISOString().replace(/T/, ' ').replace(/Z.*$/, '').replace(/-/g, d.yellow+'-'+d.cyan).replace(/:/g, d.yellow+':'+d.cyan).replace('.', d.yellow+'.'+d.cyan)+e+
-				l.gray+' - ['+e+pad(file+':',fileLength-(''+line).length).replace('.',d.yellow+'.'+e)+d.cyan+line+e+l.gray+']: '+e+arguments[0];
-			oldLog.apply(null, arguments);
-		}
+		printIfAllowed(logLevel, arguments);
+	} else if (defaultLogLevel) {
+		printIfAllowed(defaultLogLevel, arguments);
 	} else {
 		oldLog.apply(null, arguments);
 	}
