@@ -1,0 +1,14 @@
+{
+    "defaultLogLevel": "INFO",
+    "useConsoleLog": true,
+    "log" : {
+        "*": "ALL",
+        "test.js": "ALL",
+        "directory": {
+            "*": "WARN",
+            "nested_directory": {
+                "test3.js": "DEBUG"
+            }
+        }
+    }
+}
