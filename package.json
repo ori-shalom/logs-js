@@ -1,6 +1,6 @@
 {
   "name": "logs-js",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "simple JavaScript logging library",
   "repository": {
     "type": "git",
@@ -8,7 +8,7 @@
   },
   "main": "logs-js.js",
   "scripts": {
-    "test": "cd tests && npm pack ../ && npm install --prefix ./ logs-js-1.0.4.tgz && rm logs-js-1.0.4.tgz && node test.js"
+    "test": "cd tests && npm pack ../ && npm install --prefix ./ logs-js-1.0.5.tgz && rm logs-js-1.0.5.tgz && node test.js"
   },
   "author": "Ori Shalom",
   "license": "ISC",
